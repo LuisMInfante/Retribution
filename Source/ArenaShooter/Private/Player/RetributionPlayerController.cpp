@@ -4,6 +4,7 @@
 #include "Player/RetributionPlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "GameFramework/Character.h"
 
 ARetributionPlayerController::ARetributionPlayerController()
 {
@@ -27,8 +28,10 @@ void ARetributionPlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent); // Assert
-
+	
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ARetributionPlayerController::Move);
+	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ARetributionPlayerController::Look);
+	
 }
 
 void ARetributionPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -45,4 +48,12 @@ void ARetributionPlayerController::Move(const FInputActionValue& InputActionValu
 		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
 		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
 	}
+}
+
+void ARetributionPlayerController::Look(const FInputActionValue& InputActionValue)
+{
+	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
+
+	AddYawInput(InputAxisVector.X);
+	AddPitchInput(InputAxisVector.Y * -1);
 }
